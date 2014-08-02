@@ -19,9 +19,10 @@
 package main
 
 import (
-	"fmt"
+	. "github.com/SchumacherFM/goverflow"
 )
 
 func main() {
-	fmt.Println("Hello")
+	a := NewAppConfig()
+	a.Goverflow()
 }
