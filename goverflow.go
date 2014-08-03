@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"github.com/SchumacherFM/goverflow/poster"
 )
 
 type AppConfig struct {
@@ -43,6 +44,7 @@ func (a *AppConfig) Goverflow() {
 
 	for t := range a.ticker.C {
 		a.logger.Println("check SO ... Tick at", t)
+		go poster.RoutinePoster()
 	}
 }
 

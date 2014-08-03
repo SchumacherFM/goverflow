@@ -1,0 +1,5 @@
+package poster
+
+func RoutinePoster(){
+
+}
