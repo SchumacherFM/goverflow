@@ -20,9 +20,20 @@ package main
 
 import (
 	. "github.com/SchumacherFM/goverflow"
+	"flag"
+
 )
 
 func main() {
-	a := NewAppConfig()
+	inputDuration := flag.Int("seconds", 2, "Sleep duration in Seoncds")
+	logFile := flag.String("logFile", "", "Log to file or if empty to os.Stderr")
+	configFile := flag.String("configFile", "config.json", "Config file")
+	flag.Parse()
+
+	a := NewGoverflowApp()
+
+	a.SetInterval(inputDuration)
+	a.SetLogFile(logFile)
+	a.SetConfigFileName(configFile)
 	a.Goverflow()
 }

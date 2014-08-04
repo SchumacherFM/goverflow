@@ -1,55 +1,66 @@
 package goverflow
 
 import (
-	"flag"
+	"github.com/SchumacherFM/goverflow/poster"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-	"github.com/SchumacherFM/goverflow/poster"
 )
 
-type AppConfig struct {
-	tickerSeconds time.Duration
-	ticker        *time.Ticker
-	logger        *log.Logger
+type goverflowApp struct {
+	tickerSeconds  time.Duration
+	ticker         *time.Ticker
+	logger         *log.Logger
+	configFileName *string
 }
 
-func NewAppConfig() *AppConfig {
-	inputDuration := flag.Int("seconds", 2, "Sleep duration in Seoncds")
-	logFile := flag.String("logFile", "", "Log to file or if empty to os.Stderr")
-	flag.Parse()
-	secs := time.Second * time.Duration(*inputDuration)
-	ac := &AppConfig{
-		tickerSeconds: secs,
-		ticker:        time.NewTicker(secs),
-	}
+func NewGoverflowApp() *goverflowApp {
+	return &goverflowApp{}
+}
 
-	if "" != *logFile {
+func (a *goverflowApp) SetInterval(interval *int) {
+	secs := time.Second * time.Duration(*interval)
+	a.tickerSeconds = secs
+	a.ticker = time.NewTicker(secs)
+
+}
+
+func (a *goverflowApp) SetLogFile(logFile *string) {
+	if "" != *logFile && nil != logFile {
 		logFilePointer, err := os.OpenFile(*logFile, os.O_WRONLY|os.O_CREATE, 0600)
 		if err != nil {
 			panic(err)
 		}
-		ac.logger = log.New(logFilePointer, "[GF] ", log.LstdFlags)
+		a.logger = log.New(logFilePointer, "[GF] ", log.LstdFlags)
 	} else {
-		ac.logger = log.New(os.Stderr, "[GF] ", log.LstdFlags)
+		a.logger = log.New(os.Stderr, "[GF] ", log.LstdFlags)
 	}
 
-	return ac
 }
 
-func (a *AppConfig) Goverflow() {
+func (a *goverflowApp) SetConfigFileName(f *string) {
+	a.configFileName = f
+}
+
+func (a *goverflowApp) GetLogger() *log.Logger {
+	return a.logger
+}
+
+// Goverflow is the main method
+func (a *goverflowApp) Goverflow() {
 	a.catchSysCall()
 
-	for t := range a.ticker.C {
-		a.logger.Println("check SO ... Tick at", t)
-		go poster.RoutinePoster()
+	thePoster := poster.NewPoster(a.configFileName)
+	thePoster.SetLogger(a.GetLogger())
+	for _ = range a.ticker.C {
+		go thePoster.RoutinePoster()
 	}
 }
 
 // catchSysCall ends the program correctly when receiving a sys call
-func (a *AppConfig) catchSysCall() {
+func (a *goverflowApp) catchSysCall() {
 	signalChannel := make(chan os.Signal, 1)
 	signal.Notify(
 		signalChannel,

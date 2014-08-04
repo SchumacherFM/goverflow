@@ -1,0 +1,5 @@
+{
+	"host":"https://api.stackexchange.com",
+	"apiVersion":	"2.2",
+	"searchParams":	"fromdate=1406851200&order=desc&sort=creation&tagged=go&site=stackoverflow"
+}

@@ -2,15 +2,15 @@
 package seapi
 
 import (
-	"testing"
-	"net/http/httptest"
-	"net/http"
-	"net/url"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"testing"
 )
 
 var (
-	seapi = NewSeapi("stackoverflow")
+	seapi = NewSeapi()
 )
 
 func TestGetQueryUrlEmptyHttps(t *testing.T) {
@@ -21,12 +21,12 @@ func TestGetQueryUrlEmptyHttps(t *testing.T) {
 }
 
 func TestGetQueryUrlEmptyHttp(t *testing.T) {
-	seapi.UseSsl = false
+
 	actual := seapi.getQueryUrl()
 	if expected := "http://api.stackexchange.com/"; expected != actual {
 		t.Error("Expected:", expected, " but got: ", actual)
 	}
-	seapi.UseSsl = true
+
 }
 
 func TestQueryPrepare1(t *testing.T) {
@@ -83,7 +83,6 @@ func TestQuery1(t *testing.T) {
 	seapi.AddParam("order", "desc")
 	seapi.AddParam("sort", "creation")
 	seapi.SetMethod([]string{"search"})
-	seapi.UseSsl = false
 
 	httpTS := getMockServerForPath("/search", "test_search1", t)
 	defer httpTS.Close()
@@ -93,12 +92,11 @@ func TestQuery1(t *testing.T) {
 
 	if nil != qryErr {
 		t.Fatal(qryErr.Error())
-	}else{
+	} else {
 		if len(searchResult.Items) == 0 {
 			t.Error("SearchResultCollection.Items is zero :-(")
 		}
 	}
-
 
 }
 
@@ -111,11 +109,11 @@ func getMockServerForPath(path string, testDataJsonFile string, t *testing.T) *h
 		if r.URL.Path != path {
 			t.Error("Path doesn't match. Expected: ", path, " Actual: ", r.URL.Path)
 			http.Error(w, "Path doesn't match", http.StatusInternalServerError)
-		}else {
+		} else {
 			testData, err := ioutil.ReadFile("./testData/" + testDataJsonFile + ".json")
 			if nil != err {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}else {
+			} else {
 				w.Write(testData)
 			}
 		}

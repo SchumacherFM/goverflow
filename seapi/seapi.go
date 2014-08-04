@@ -1,36 +1,43 @@
-// seapi is short version for Stack Exchange API
+// seapi is short Version for Stack Exchange API
 package seapi
 
 import (
-	"net/http"
-	"net/url"
-	"time"
-	"strings"
-	"io/ioutil"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
 )
 
 const (
 	API_TIMEOUT = 60
 )
 
+type SeapiInterface interface {
+	SetTransport(t http.RoundTripper) *Seapi
+	getTransport() http.RoundTripper
+	AddParam(key, value string) *Seapi
+	SetParams(values url.Values) *Seapi
+	SetMethod(method []string) *Seapi
+	getQueryUrl() (theUrl string)
+	resetQuery()
+	Query(collection interface{}) (error error)
+}
+
 type Seapi struct {
-	UseSsl        bool
-	host          string
-	version       string
-	site          string
+	Host          string
+	Version       string
 	transport     http.RoundTripper
 	currentMethod []string
 	currentParams url.Values
 }
 
-func NewSeapi(site string) (seapi *Seapi) {
+func NewSeapi() (seapi *Seapi) {
 	seapi = &Seapi{
-		UseSsl: true,
-		host:"://api.stackexchange.com",
-		version: "2.2",
-		site: site,
+		Host:          "https://api.stackexchange.com",
+		Version:       "2.2",
 		currentParams: make(url.Values),
 	}
 
@@ -53,18 +60,17 @@ func (s *Seapi) AddParam(key, value string) *Seapi {
 	s.currentParams.Add(key, value)
 	return s
 }
+func (s *Seapi) SetParams(values url.Values) *Seapi {
+	s.currentParams = values
+	return s
+}
 func (s *Seapi) SetMethod(method []string) *Seapi {
 	s.currentMethod = method
 	return s
 }
 
 func (s *Seapi) getQueryUrl() (theUrl string) {
-	theUrl = "http"
-	if true == s.UseSsl {
-		theUrl = "https"
-	}
-	theUrl = theUrl+s.host+"/"+strings.Join(s.currentMethod, "/")
-
+	theUrl = s.Host+"/"+strings.Join(s.currentMethod, "/")
 	if len(s.currentParams) > 0 {
 		theUrl = theUrl+"?"+s.currentParams.Encode()
 	}
@@ -77,7 +83,7 @@ func (s *Seapi) resetQuery() {
 		// s.currentMethod[:0]
 		s.currentMethod = nil
 	}
-	for key, _ := range s.currentParams {
+	for key := range s.currentParams {
 		delete(s.currentParams, key)
 	}
 }
@@ -86,7 +92,7 @@ func (s *Seapi) Query(collection interface{}) (error error) {
 
 	client := &http.Client{
 		Transport: s.getTransport(),
-		Timeout: time.Second * API_TIMEOUT,
+		Timeout:   time.Second * API_TIMEOUT,
 	}
 	qryUrl := s.getQueryUrl()
 	response, error := client.Get(qryUrl)
