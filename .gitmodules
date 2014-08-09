@@ -1,0 +1,9 @@
+[submodule "go-httpclient"]
+	path = go-httpclient
+	url = git@github.com:mreiferson/go-httpclient.git
+[submodule "go-log"]
+	path = go-log
+	url = https://github.com/segmentio/go-log
+[submodule "kv"]
+	path = kv
+	url = git@github.com:cznic/kv.git

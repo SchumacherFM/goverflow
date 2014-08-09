@@ -1,8 +1,27 @@
+/*
+	Copyright (C) 2014  Cyrill AT Schumacher dot fm
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Contribute @ https://github.com/SchumacherFM/goverflow
+*/
+
 package goverflow
 
 import (
+	log "github.com/SchumacherFM/goverflow/go-log"
 	"github.com/SchumacherFM/goverflow/poster"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,15 +46,31 @@ func (a *goverflowApp) SetInterval(interval *int) {
 
 }
 
-func (a *goverflowApp) SetLogFile(logFile *string) {
+func (a *goverflowApp) SetLogFile(logFile *string, logLevel *int) {
+	var logMap = map[int]log.Level{
+		0: log.DEBUG,
+		1: log.INFO,
+		2: log.NOTICE,
+		3: log.WARNING,
+		4: log.ERROR,
+		5: log.CRITICAL,
+		6: log.ALERT,
+		7: log.EMERGENCY,
+	}
+
+	validLogLevel, isSetLevel := logMap[int(*logLevel)]
+	if false == isSetLevel {
+		validLogLevel = log.DEBUG
+	}
+
 	if "" != *logFile && nil != logFile {
 		logFilePointer, err := os.OpenFile(*logFile, os.O_WRONLY|os.O_CREATE, 0600)
 		if err != nil {
 			panic(err)
 		}
-		a.logger = log.New(logFilePointer, "[GF] ", log.LstdFlags)
+		a.logger = log.New(logFilePointer, validLogLevel, "[GF] ")
 	} else {
-		a.logger = log.New(os.Stderr, "[GF] ", log.LstdFlags)
+		a.logger = log.New(os.Stderr, validLogLevel, "[GF] ")
 	}
 
 }
@@ -54,6 +89,8 @@ func (a *goverflowApp) Goverflow() {
 
 	thePoster := poster.NewPoster(a.configFileName)
 	thePoster.SetLogger(a.GetLogger())
+	thePoster.InitDatabase()
+	go thePoster.RoutinePoster()
 	for _ = range a.ticker.C {
 		go thePoster.RoutinePoster()
 	}
@@ -71,9 +108,9 @@ func (a *goverflowApp) catchSysCall() {
 	)
 	go func() {
 		for sig := range signalChannel {
-			a.logger.Printf("Received signal: %s\n", sig.String())
+			a.logger.Debug("Received signal: %s\n", sig.String())
 			a.ticker.Stop()
-			a.logger.Println("Ticker stopped and good bye!")
+			a.logger.Debug("Ticker stopped and good bye!")
 			os.Exit(0)
 		}
 	}()

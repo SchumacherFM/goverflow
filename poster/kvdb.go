@@ -16,25 +16,21 @@
 
     Contribute @ https://github.com/SchumacherFM/goverflow
 */
-package main
+
+package poster
 
 import (
-	. "github.com/SchumacherFM/goverflow"
-	"flag"
-
+	"fmt"
+	"github.com/SchumacherFM/goverflow/kv"
 )
 
-func main() {
-	inputDuration := flag.Int("seconds", 10, "Sleep duration in Seoncds, recommended: (3600*24)/300; quota is 300 queries")
-	logLevel := flag.Int("logLevel", 0, "0 Debug, 1 Info, 2 Notice -> 7 Emergency")
-	logFile := flag.String("logFile", "", "Log to file or if empty to os.Stderr")
-	configFile := flag.String("configFile", "config.json", "Config file")
-	flag.Parse()
+var goverflowDB *kv.DB
 
-	a := NewGoverflowApp()
+func kvInitDb() (*kv.DB, error) {
+	kvOpt := &kv.Options{}
+	return kv.CreateMem(kvOpt)
+}
 
-	a.SetInterval(inputDuration)
-	a.SetLogFile(logFile, logLevel)
-	a.SetConfigFileName(configFile)
-	a.Goverflow()
+func kvGetKey(id int) []byte {
+	return []byte(fmt.Sprintf("q_%d", id))
 }

@@ -1,11 +1,33 @@
+/*
+	Copyright (C) 2014  Cyrill AT Schumacher dot fm
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Contribute @ https://github.com/SchumacherFM/goverflow
+*/
+
 package poster
 
 import (
 	"encoding/json"
+	log "github.com/SchumacherFM/goverflow/go-log"
 	"github.com/SchumacherFM/goverflow/seapi"
-	"log"
 	"net/url"
 	"os"
+	"strconv"
+	"time"
+	"sort"
 )
 
 type poster struct {
@@ -15,27 +37,21 @@ type poster struct {
 		ApiVersion   string
 		SearchParams string
 	}
-	so *seapi.Seapi
-}
-
-// Routineposter runs in a go routine
-func (p *poster) RoutinePoster() {
-
-	p.logger.Printf("%#v\n\n",p)
-
-
-	p.logger.Println("Tick ...")
+	timeLastRun    int64
+	quotaRemaining int
+	so          *seapi.Seapi
 }
 
 func NewPoster(fileName *string) *poster {
 	p := &poster{
-		so : seapi.NewSeapi(),
+		so: seapi.NewSeapi(),
 	}
 
 	parseJsonConfig(p, fileName)
 
 	p.so.Host = p.Config.Host
 	p.so.Version = p.Config.ApiVersion
+	p.setTimeLastRun()
 
 	parsed, err := url.Parse("http://dummy.com/?" + p.Config.SearchParams)
 	if nil != err {
@@ -46,11 +62,91 @@ func NewPoster(fileName *string) *poster {
 	return p
 }
 
+// Routineposter runs in a go routine
+func (p *poster) RoutinePoster() error {
+	defer p.setTimeLastRun()
+	soSearchResultCollection := p.routineGetSearchCollection()
+	if nil == soSearchResultCollection {
+		return nil // no further processing
+	}
+
+	// sort map of soSearchResultCollection by lowest question id to highest
+	var keys []int
+	for k := range soSearchResultCollection {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+	for _, k := range keys {
+		sr := soSearchResultCollection[k]
+		// now post to twitter and set value in DB
+		p.logger.Debug("RC: %v", sr)
+	}
+
+	p.logger.Debug("Tick ...\n")
+	return nil
+}
+
+// routineGetCollection runs within a goroutine
+func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
+	soSearchResultCollection := &seapi.SearchResultCollection{}
+
+	// change fromDate to the current timeStamp of this run
+	p.so.SetParam("fromdate", strconv.FormatInt(p.timeLastRun, 10))
+
+	queryUrl, err := p.so.Query(soSearchResultCollection)
+	p.logger.Debug("Query URL: %s", queryUrl)
+	if nil != err {
+		p.logger.Emergency("L36: %s", err.Error())
+		return nil // no further processing in this routine
+	}
+
+	if 0 == len(soSearchResultCollection.Items) {
+		p.logger.Debug("No new questions posted since %s", p.getTimeLastRunRFC1123Z())
+		return nil
+	}
+
+	if 0 == soSearchResultCollection.Quota_remaining {
+		p.logger.Debug("Over quota :-( %s", p.getTimeLastRunRFC1123Z())
+		return nil
+	} else {
+		p.logger.Debug("Quota remaining: %d", soSearchResultCollection.Quota_remaining)
+	}
+
+	// now calculate the difference and return only the new items
+	var newItems = make(map[int]seapi.SearchResult)
+	for _, searchResult := range soSearchResultCollection.Items {
+		storedResult, _ := goverflowDB.Get(nil, kvGetKey(searchResult.Question_id))
+		if nil != storedResult { // already posted
+			continue
+		}
+		newItems[searchResult.Question_id] = searchResult
+	}
+
+	return newItems
+}
+
+func (p *poster) setTimeLastRun() {
+	p.timeLastRun = time.Now().Unix()-3600*12 // last part just for testing
+}
+
+func (p *poster) getTimeLastRunRFC1123Z() string {
+	return time.Unix(p.timeLastRun, 0).Format(time.RFC1123Z)
+}
+
 func (p *poster) SetLogger(lg *log.Logger) {
 	p.logger = lg
 }
 
-// parseJsonConfig parses the json file ;-)
+func (p *poster) InitDatabase() {
+	var err error
+	goverflowDB, err = kvInitDb()
+	if nil != err {
+		p.logger.Emergency("failed to create memDB: %#v", err)
+		os.Exit(1) // die die die
+	}
+}
+
+// parseJsonConfig parses the json file ;-) no logger available
 func parseJsonConfig(p *poster, fileName *string) {
 	file, err := os.Open(*fileName)
 
