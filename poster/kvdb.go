@@ -39,6 +39,10 @@ func (db *GFDB) FindByQuestionId(id int) ([]byte, error) {
 	return db.Get(nil, db.makeQuestionKey(id))
 }
 
+func (db *GFDB) SaveTweet(id int) error {
+	return db.Set(db.makeQuestionKey(id), []byte("Just some entry ..."))
+}
+
 func (db *GFDB) makeQuestionKey(id int) []byte {
 	return []byte(fmt.Sprintf("q_%d", id))
 }

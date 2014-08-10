@@ -33,17 +33,19 @@ import (
 type poster struct {
 	logger *log.Logger
 	Config struct {
-		Host         string
-		ApiVersion   string
-		SearchParams string
+		Host              string
+		ApiVersion        string
+		SearchParams      string
+		TwitterConfigFile string
 	}
-	timeLastRun      int64
-	quotaRemaining   int
+	timeLastRun    int64
+	quotaRemaining int
 	so             *seapi.Seapi
-	gfdb             GFDB
+	gfdb           GFDB
+	twitter        Twitter
 }
 
-func NewPoster(fileName *string) *poster {
+func NewPoster(fileName *string, logger *log.Logger) *poster {
 
 	var err error
 	db := new(GFDB)
@@ -53,11 +55,13 @@ func NewPoster(fileName *string) *poster {
 	}
 
 	p := &poster{
-		so: seapi.NewSeapi(),
-		gfdb: *db,
+		so:     seapi.NewSeapi(),
+		gfdb:   *db,
+		logger: logger,
 	}
 
 	parseJsonConfig(p, fileName)
+	parseTwitterJsonConfig(&p.twitter, p.Config.TwitterConfigFile)
 
 	p.so.Host = p.Config.Host
 	p.so.Version = p.Config.ApiVersion
@@ -69,6 +73,7 @@ func NewPoster(fileName *string) *poster {
 	}
 	p.so.SetParams(parsed.Query())
 	p.so.SetMethod([]string{"search"})
+	p.twitter.InitClient(p.logger)
 	return p
 }
 
@@ -77,7 +82,7 @@ func (p *poster) RoutinePoster() error {
 	defer p.setTimeLastRun()
 	soSearchResultCollection := p.routineGetSearchCollection()
 	if nil == soSearchResultCollection {
-		return nil // no further processing
+		return nil // no further processing, already logged
 	}
 
 	// sort map of soSearchResultCollection by lowest question id to highest
@@ -89,7 +94,13 @@ func (p *poster) RoutinePoster() error {
 	for _, k := range keys {
 		sr := soSearchResultCollection[k]
 		// now post to twitter and set value in DB
-		p.logger.Debug("RC: %v", sr)
+		tweetedError := p.twitter.TweetQuestion(&sr)
+		if nil == tweetedError {
+			p.logger.Debug("Tweeted! #v")
+			p.gfdb.SaveTweet(k)
+		} else {
+			p.logger.Warning("Failed to tweet: %s", tweetedError)
+		}
 	}
 
 	p.logger.Debug("Tick ...\n")
@@ -139,15 +150,11 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 }
 
 func (p *poster) setTimeLastRun() {
-	p.timeLastRun = time.Now().Unix()-3600*12 // last part just for testing
+	p.timeLastRun = time.Now().Unix() - 3600*12 // last part just for testing
 }
 
 func (p *poster) getTimeLastRunRFC1123Z() string {
 	return time.Unix(p.timeLastRun, 0).Format(time.RFC1123Z)
-}
-
-func (p *poster) SetLogger(lg *log.Logger) {
-	p.logger = lg
 }
 
 // parseJsonConfig parses the json file ;-) no logger available
@@ -160,6 +167,20 @@ func parseJsonConfig(p *poster, fileName *string) {
 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&p.Config)
+	if nil != err {
+		panic(err)
+	}
+}
+
+func parseTwitterJsonConfig(t *Twitter, fileName string) {
+	file, err := os.Open(fileName)
+
+	if nil != err {
+		panic(err)
+	}
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&t)
 	if nil != err {
 		panic(err)
 	}
