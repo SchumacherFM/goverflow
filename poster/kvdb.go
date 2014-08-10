@@ -24,13 +24,21 @@ import (
 	"github.com/SchumacherFM/goverflow/kv"
 )
 
-var goverflowDB *kv.DB
-
-func kvInitDb() (*kv.DB, error) {
-	kvOpt := &kv.Options{}
-	return kv.CreateMem(kvOpt)
+type GFDB struct {
+	*kv.DB
 }
 
-func kvGetKey(id int) []byte {
+func (db *GFDB) InitDb() error {
+	var err error
+	kvOpt := &kv.Options{}
+	db.DB, err = kv.CreateMem(kvOpt)
+	return err
+}
+
+func (db *GFDB) FindByQuestionId(id int) ([]byte, error) {
+	return db.Get(nil, db.makeQuestionKey(id))
+}
+
+func (db *GFDB) makeQuestionKey(id int) []byte {
 	return []byte(fmt.Sprintf("q_%d", id))
 }

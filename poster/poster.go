@@ -25,9 +25,9 @@ import (
 	"github.com/SchumacherFM/goverflow/seapi"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"time"
-	"sort"
 )
 
 type poster struct {
@@ -37,14 +37,24 @@ type poster struct {
 		ApiVersion   string
 		SearchParams string
 	}
-	timeLastRun    int64
-	quotaRemaining int
-	so          *seapi.Seapi
+	timeLastRun      int64
+	quotaRemaining   int
+	so             *seapi.Seapi
+	gfdb             GFDB
 }
 
 func NewPoster(fileName *string) *poster {
+
+	var err error
+	db := new(GFDB)
+	err = db.InitDb()
+	if nil != err {
+		panic("failed to create memDB: " + err.Error())
+	}
+
 	p := &poster{
 		so: seapi.NewSeapi(),
+		gfdb: *db,
 	}
 
 	parseJsonConfig(p, fileName)
@@ -115,7 +125,10 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 	// now calculate the difference and return only the new items
 	var newItems = make(map[int]seapi.SearchResult)
 	for _, searchResult := range soSearchResultCollection.Items {
-		storedResult, _ := goverflowDB.Get(nil, kvGetKey(searchResult.Question_id))
+		storedResult, err := p.gfdb.FindByQuestionId(searchResult.Question_id)
+		if nil != err {
+			p.logger.Error("FindByQuestionId: %s", err)
+		}
 		if nil != storedResult { // already posted
 			continue
 		}
@@ -135,15 +148,6 @@ func (p *poster) getTimeLastRunRFC1123Z() string {
 
 func (p *poster) SetLogger(lg *log.Logger) {
 	p.logger = lg
-}
-
-func (p *poster) InitDatabase() {
-	var err error
-	goverflowDB, err = kvInitDb()
-	if nil != err {
-		p.logger.Emergency("failed to create memDB: %#v", err)
-		os.Exit(1) // die die die
-	}
 }
 
 // parseJsonConfig parses the json file ;-) no logger available

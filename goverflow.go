@@ -89,7 +89,6 @@ func (a *goverflowApp) Goverflow() {
 
 	thePoster := poster.NewPoster(a.configFileName)
 	thePoster.SetLogger(a.GetLogger())
-	thePoster.InitDatabase()
 	go thePoster.RoutinePoster()
 	for _ = range a.ticker.C {
 		go thePoster.RoutinePoster()
