@@ -19,22 +19,61 @@
 package main
 
 import (
+	"github.com/codegangsta/cli"
 	. "github.com/SchumacherFM/goverflow"
-	"flag"
+	"os"
 
 )
 
 func main() {
-	inputDuration := flag.Int("seconds", 10, "Sleep duration in Seoncds, recommended: (3600*24)/300; quota is 300 queries")
-	logLevel := flag.Int("logLevel", 0, "0 Debug, 1 Info, 2 Notice -> 7 Emergency")
-	logFile := flag.String("logFile", "", "Log to file or if empty to os.Stderr")
-	configFile := flag.String("configFile", "config.json", "Config file")
-	flag.Parse()
+	app := cli.NewApp()
+	app.Name = "goverflow"
+	app.Version = "0.0.1"
+	app.Usage = "Searches the stackexchange API and tweets new questions."
+	app.Action = showHelp
+	app.Flags = []cli.Flag{
+		cli.IntFlag{
+			Name:  "seconds,s",
+			Value: 10,
+			Usage: "Sleep duration in Seoncds, recommended: (3600*24)/300; quota is 300 queries",
+		},
+		cli.IntFlag{
+			Name:  "logLevel,ll",
+			Value: 0,
+			Usage: "0 Debug, 1 Info, 2 Notice -> 7 Emergency",
+		},
+		cli.StringFlag{
+			Name:  "logFile,lf",
+			Value: "",
+			Usage: "Log to file or if empty to os.Stderr",
+		},
+		cli.StringFlag{
+			Name:  "configFile,c",
+			Value: "config.json",
+			Usage: "The JSON config file",
+		},
+	}
+	app.Commands = []cli.Command{
+		{
+			Name:      "run",
+			ShortName: "r",
+			Usage:     "Run the gin proxy in the current working directory",
+			Action:    mainAction,
+		},
+	}
+
+	app.Run(os.Args)
+}
+
+func showHelp(c *cli.Context) {
+	cli.ShowAppHelp(c)
+}
+
+func mainAction(c *cli.Context) {
 
 	a := NewGoverflowApp()
-
-	a.SetInterval(inputDuration)
-	a.SetLogFile(logFile, logLevel)
-	a.SetConfigFileName(configFile)
+	a.SetInterval(c.GlobalInt("seconds"))
+	a.SetLogFile(c.GlobalString("logFile"), c.GlobalInt("logLevel"))
+	a.SetConfigFileName(c.GlobalString("configFile"))
 	a.Goverflow()
 }

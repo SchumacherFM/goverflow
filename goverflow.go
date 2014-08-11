@@ -32,21 +32,21 @@ type goverflowApp struct {
 	tickerSeconds  time.Duration
 	ticker         *time.Ticker
 	logger         *log.Logger
-	configFileName *string
+	configFileName string
 }
 
 func NewGoverflowApp() *goverflowApp {
 	return &goverflowApp{}
 }
 
-func (a *goverflowApp) SetInterval(interval *int) {
-	secs := time.Second * time.Duration(*interval)
+func (a *goverflowApp) SetInterval(interval int) {
+	secs := time.Second * time.Duration(interval)
 	a.tickerSeconds = secs
 	a.ticker = time.NewTicker(secs)
 
 }
 
-func (a *goverflowApp) SetLogFile(logFile *string, logLevel *int) {
+func (a *goverflowApp) SetLogFile(logFile string, logLevel int) {
 	var logMap = map[int]log.Level{
 		0: log.DEBUG,
 		1: log.INFO,
@@ -58,13 +58,13 @@ func (a *goverflowApp) SetLogFile(logFile *string, logLevel *int) {
 		7: log.EMERGENCY,
 	}
 
-	validLogLevel, isSetLevel := logMap[int(*logLevel)]
+	validLogLevel, isSetLevel := logMap[logLevel]
 	if false == isSetLevel {
 		validLogLevel = log.DEBUG
 	}
 
-	if "" != *logFile && nil != logFile {
-		logFilePointer, err := os.OpenFile(*logFile, os.O_WRONLY|os.O_CREATE, 0600)
+	if "" != logFile {
+		logFilePointer, err := os.OpenFile(logFile, os.O_WRONLY|os.O_CREATE, 0600)
 		if err != nil {
 			panic(err)
 		}
@@ -75,7 +75,7 @@ func (a *goverflowApp) SetLogFile(logFile *string, logLevel *int) {
 
 }
 
-func (a *goverflowApp) SetConfigFileName(f *string) {
+func (a *goverflowApp) SetConfigFileName(f string) {
 	a.configFileName = f
 }
 
@@ -87,7 +87,7 @@ func (a *goverflowApp) GetLogger() *log.Logger {
 func (a *goverflowApp) Goverflow() {
 	a.catchSysCall()
 
-	thePoster := poster.NewPoster(a.configFileName, a.GetLogger())
+	thePoster := poster.NewPoster(&a.configFileName, a.GetLogger())
 	go thePoster.RoutinePoster()
 	for _ = range a.ticker.C {
 		go thePoster.RoutinePoster()
