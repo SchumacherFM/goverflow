@@ -20,6 +20,7 @@
 package poster
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	log "github.com/SchumacherFM/goverflow/go-log"
@@ -28,8 +29,9 @@ import (
 	"github.com/kurrik/twittergo"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
-	"bytes"
+	"text/template"
 )
 
 const (
@@ -44,9 +46,11 @@ type Twitter struct {
 	AccessTokenSecret string
 	client            *twittergo.Client
 	logger            *log.Logger
+	tweetTpl          *template.Template
 }
 
-func (t *Twitter) InitClient(logger *log.Logger) {
+func (t *Twitter) InitClient(logger *log.Logger, tweetTplFile string) {
+	var err error
 	t.logger = logger
 
 	config := &oauth1a.ClientConfig{
@@ -55,6 +59,12 @@ func (t *Twitter) InitClient(logger *log.Logger) {
 	}
 	user := oauth1a.NewAuthorizedConfig(t.AccessToken, t.AccessTokenSecret)
 	t.client = twittergo.NewClient(config, user)
+
+	t.tweetTpl, err = template.New(tweetTplFile).ParseFiles(tweetTplFile)
+	if nil != err {
+		t.logger.Emergency("Cannot open tweet template file %s", tweetTplFile)
+		os.Exit(2)
+	}
 }
 
 // TweetQuestion posts a tweet to twitter
@@ -69,8 +79,7 @@ func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) error {
 	)
 
 	data := url.Values{}
-
-	data.Set("status", getTweet(sr))
+	data.Set("status", t.getTweet(sr))
 	body := strings.NewReader(data.Encode())
 	req, err = http.NewRequest("POST", "/1.1/statuses/update.json", body)
 	if err != nil {
@@ -114,15 +123,16 @@ func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) error {
 	return nil
 }
 
-func getTweet(sr *seapi.SearchResult) string {
-	tweetSuffix := "\n#golang" // @todo make configurable
-	tweet := bytes.NewBufferString(sr.Title)
-	maxLen := TWEET_LENGTH - TCO_LENGTH - len(tweetSuffix) - 2 // 2 is whitespaces
-	if tweet.Len() > maxLen {
-		tweet.Truncate(maxLen)
+func (t *Twitter) getTweet(sr *seapi.SearchResult) string {
+	var theTweet bytes.Buffer
+
+	err := t.tweetTpl.Execute(&theTweet, sr)
+
+	if nil != err {
+		t.logger.Emergency("Error template %s", err)
 	}
-	tweet.WriteString("\n")
-	tweet.WriteString(sr.Link)
-	tweet.WriteString(tweetSuffix)
-	return tweet.String()
+	// todo check for length and convert e.g. &quot; into "
+	return theTweet.String()
+	//	maxLen := TWEET_LENGTH - TCO_LENGTH - len(tweetSuffix) - 2 // 2 is whitespaces
+
 }

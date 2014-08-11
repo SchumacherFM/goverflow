@@ -37,6 +37,7 @@ type poster struct {
 		ApiVersion        string
 		SearchParams      string
 		TwitterConfigFile string
+		TweetTplFile      string
 	}
 	timeLastRun    int64
 	quotaRemaining int
@@ -73,7 +74,7 @@ func NewPoster(fileName *string, logger *log.Logger) *poster {
 	}
 	p.so.SetParams(parsed.Query())
 	p.so.SetMethod([]string{"search"})
-	p.twitter.InitClient(p.logger)
+	p.twitter.InitClient(p.logger, p.Config.TweetTplFile)
 	return p
 }
 

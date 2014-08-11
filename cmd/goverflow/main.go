@@ -29,7 +29,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "goverflow"
 	app.Version = "0.0.1"
-	app.Usage = "Searches the stackexchange API and tweets new questions."
+	app.Usage = "Searches the stackexchange API and tweets new questions. App runs in the background or daemon."
 	app.Action = showHelp
 	app.Flags = []cli.Flag{
 		cli.IntFlag{
