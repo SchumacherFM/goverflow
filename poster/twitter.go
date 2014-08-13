@@ -32,6 +32,7 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"html"
 )
 
 const (
@@ -109,13 +110,11 @@ func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) (*twittergo.Tweet, error
 		tweet *twittergo.Tweet
 	)
 
+	twString, err = t.getTweet(sr)
+	if nil != err {
+		return nil, err
+	}
 	data := &url.Values{}
-	twString = t.getTweet(sr)
-
-	//	if nil != err {
-	//		return nil, err
-	//	}
-
 	data.Set("status", twString)
 	tweet, err = t.doRequest(data)
 
@@ -147,12 +146,7 @@ func (t *Twitter) getTweet(sr *seapi.SearchResult) (string, error) {
 	if nil != err {
 		t.logger.Emergency("Error template %s", err)
 	}
-
-	//	if len(theTweet) > TWEET_LENGTH {
-	//
-	//	}
-
-	// todo check for length and convert e.g. &quot; into "
-	return theTweet.String(), nil
+	// fix https://twitter.com/davecheney/status/499495512555266048
+	return html.UnescapeString(theTweet.String()), nil
 
 }
