@@ -23,7 +23,7 @@ package seapi
 import (
 	"encoding/json"
 	"errors"
-	httpclient "github.com/SchumacherFM/goverflow/go-httpclient"
+	httpclient "github.com/mreiferson/go-httpclient"
 	"io/ioutil"
 	"net/http"
 	"net/url"

@@ -20,7 +20,7 @@
 package goverflow
 
 import (
-	log "github.com/SchumacherFM/goverflow/go-log"
+	log "github.com/segmentio/go-log"
 	"github.com/SchumacherFM/goverflow/poster"
 	"os"
 	"os/signal"

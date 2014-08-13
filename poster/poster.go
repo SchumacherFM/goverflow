@@ -21,7 +21,7 @@ package poster
 
 import (
 	"encoding/json"
-	log "github.com/SchumacherFM/goverflow/go-log"
+	log "github.com/segmentio/go-log"
 	"github.com/SchumacherFM/goverflow/seapi"
 	"net/url"
 	"os"

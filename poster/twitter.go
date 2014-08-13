@@ -23,7 +23,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	log "github.com/SchumacherFM/goverflow/go-log"
+	log "github.com/segmentio/go-log"
 	"github.com/SchumacherFM/goverflow/seapi"
 	"github.com/kurrik/oauth1a"
 	"github.com/kurrik/twittergo"

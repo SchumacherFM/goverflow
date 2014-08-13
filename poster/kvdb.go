@@ -21,7 +21,7 @@ package poster
 
 import (
 	"fmt"
-	"github.com/SchumacherFM/goverflow/kv"
+	"github.com/cznic/kv"
 	"github.com/kurrik/twittergo"
 	"bytes"
 )
