@@ -22,6 +22,12 @@ package poster
 import (
 	"fmt"
 	"github.com/SchumacherFM/goverflow/kv"
+	"github.com/kurrik/twittergo"
+	"bytes"
+)
+
+const (
+	DB_TWEET_SEP = ";"
 )
 
 type GFDB struct {
@@ -39,8 +45,14 @@ func (db *GFDB) FindByQuestionId(id int) ([]byte, error) {
 	return db.Get(nil, db.makeQuestionKey(id))
 }
 
-func (db *GFDB) SaveTweet(id int) error {
-	return db.Set(db.makeQuestionKey(id), []byte("Just some entry ..."))
+func (db *GFDB) SaveTweet(id int, tweet *twittergo.Tweet) error {
+
+	var value bytes.Buffer
+	value.WriteString(tweet.IdStr())
+	value.WriteString(DB_TWEET_SEP)
+	value.WriteString(tweet.Text())
+
+	return db.Set(db.makeQuestionKey(id), value.Bytes())
 }
 
 func (db *GFDB) makeQuestionKey(id int) []byte {

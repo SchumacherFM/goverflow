@@ -35,7 +35,7 @@ func main() {
 		cli.IntFlag{
 			Name:  "seconds,s",
 			Value: 10,
-			Usage: "Sleep duration in Seoncds, recommended: (3600*24)/300; quota is 300 queries",
+			Usage: "Sleep duration in Seoncds, recommended: (3600*24)/300; quota is 300 queries / day",
 		},
 		cli.IntFlag{
 			Name:  "logLevel,ll",

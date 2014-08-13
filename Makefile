@@ -8,7 +8,7 @@ format:
 	${GOFMT} -w ${GOFILES}
 
 run:
-	go run cmd/goverflow/main.go
+	go run cmd/goverflow/main.go run
 
 build:
 	mkdir -p build

@@ -95,10 +95,10 @@ func (p *poster) RoutinePoster() error {
 	for _, k := range keys {
 		sr := soSearchResultCollection[k]
 		// now post to twitter and set value in DB
-		tweetedError := p.twitter.TweetQuestion(&sr)
+		theTweet, tweetedError := p.twitter.TweetQuestion(&sr)
 		if nil == tweetedError {
-			p.logger.Debug("Tweeted! #v")
-			p.gfdb.SaveTweet(k)
+			p.logger.Debug("Tweeted! %s %s", theTweet.IdStr(), theTweet.Text())
+			p.gfdb.SaveTweet(k, theTweet)
 		} else {
 			p.logger.Warning("Failed to tweet: %s", tweetedError)
 		}
@@ -151,7 +151,7 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 }
 
 func (p *poster) setTimeLastRun() {
-	p.timeLastRun = time.Now().Unix() - 3600*12 // last part just for testing
+	p.timeLastRun = time.Now().Unix()-3600*12 // last part just for testing
 }
 
 func (p *poster) getTimeLastRunRFC1123Z() string {

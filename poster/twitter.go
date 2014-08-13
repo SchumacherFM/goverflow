@@ -36,7 +36,7 @@ import (
 
 const (
 	TWEET_LENGTH = 140
-	TCO_LENGTH   = 20
+	TCO_LENGTH   = 24 // officially it's 20 chars ... but lets add 4 for back up
 )
 
 type Twitter struct {
@@ -66,11 +66,7 @@ func (t *Twitter) InitClient(logger *log.Logger, tweetTplFile string) {
 		os.Exit(2)
 	}
 }
-
-// TweetQuestion posts a tweet to twitter
-// @see https://dev.twitter.com/docs/api/1/post/statuses/update
-// returns error
-func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) error {
+func (t *Twitter) doRequest(data *url.Values) (*twittergo.Tweet, error ) {
 	var (
 		err   error
 		req   *http.Request
@@ -78,21 +74,51 @@ func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) error {
 		tweet *twittergo.Tweet
 	)
 
-	data := url.Values{}
-	data.Set("status", t.getTweet(sr))
 	body := strings.NewReader(data.Encode())
 	req, err = http.NewRequest("POST", "/1.1/statuses/update.json", body)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Could not parse request: %v\n", err))
+		return nil, errors.New(fmt.Sprintf("Could not parse request: %v\n", err))
 
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err = t.client.SendRequest(req)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Could not send request: %v\n", err))
+		return nil, errors.New(fmt.Sprintf("Could not send request: %v\n", err))
 	}
+
+	if true == resp.HasRateLimit() {
+		t.logger.Warning("Rate limit:           %v\n", resp.RateLimit())
+		t.logger.Warning("Rate limit remaining: %v\n", resp.RateLimitRemaining())
+		t.logger.Warning("Rate limit reset:     %v\n", resp.RateLimitReset())
+	} else {
+		t.logger.Notice("Could not parse rate limit from response.")
+	}
+
 	tweet = &twittergo.Tweet{}
 	err = resp.Parse(tweet)
+	return tweet, err
+}
+
+// TweetQuestion posts a tweet to twitter
+// @see https://dev.twitter.com/docs/api/1/post/statuses/update
+// returns error
+func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) (*twittergo.Tweet, error) {
+	var (
+		err   error
+		twString string
+		tweet *twittergo.Tweet
+	)
+
+	data := &url.Values{}
+	twString = t.getTweet(sr)
+
+	//	if nil != err {
+	//		return nil, err
+	//	}
+
+	data.Set("status", twString)
+	tweet, err = t.doRequest(data)
+
 	if err != nil {
 		if rle, ok := err.(twittergo.RateLimitError); ok {
 			t.logger.Warning("Rate limited, reset at %v\n", rle.Reset)
@@ -105,34 +131,28 @@ func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) error {
 		} else {
 			t.logger.Error("Problem parsing response: %v\n", err)
 		}
-		return err
+		return nil, err
 	}
-
-	fmt.Printf("ID:                   %v\n", tweet.Id())
-	fmt.Printf("Tweet:                %v\n", tweet.Text())
-	fmt.Printf("User:                 %v\n", tweet.User().Name())
-
-	if true == resp.HasRateLimit() {
-		fmt.Printf("Rate limit:           %v\n", resp.RateLimit())
-		fmt.Printf("Rate limit remaining: %v\n", resp.RateLimitRemaining())
-		fmt.Printf("Rate limit reset:     %v\n", resp.RateLimitReset())
-	} else {
-		fmt.Printf("Could not parse rate limit from response.\n")
-	}
-
-	return nil
+	return tweet, nil
 }
 
-func (t *Twitter) getTweet(sr *seapi.SearchResult) string {
+func (t *Twitter) getTweet(sr *seapi.SearchResult) (string, error) {
+
+	if (len(sr.Title)+TCO_LENGTH) > TWEET_LENGTH { // just a simple check
+		return "", errors.New("Tweet is too long ...")
+	}
+
 	var theTweet bytes.Buffer
-
 	err := t.tweetTpl.Execute(&theTweet, sr)
-
 	if nil != err {
 		t.logger.Emergency("Error template %s", err)
 	}
+
+	//	if len(theTweet) > TWEET_LENGTH {
+	//
+	//	}
+
 	// todo check for length and convert e.g. &quot; into "
-	return theTweet.String()
-	//	maxLen := TWEET_LENGTH - TCO_LENGTH - len(tweetSuffix) - 2 // 2 is whitespaces
+	return theTweet.String(), nil
 
 }
