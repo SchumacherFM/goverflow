@@ -1,6 +1,6 @@
-# Goverflow Twitter daemon to power @goverflow
+# Twitter bot to power @goverflow
 
-WIP
+Work in Progress
 
 ## Build
 
