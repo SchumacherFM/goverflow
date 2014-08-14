@@ -20,8 +20,8 @@
 package goverflow
 
 import (
-	log "github.com/segmentio/go-log"
 	"github.com/SchumacherFM/goverflow/poster"
+	log "github.com/segmentio/go-log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -108,6 +108,7 @@ func (a *goverflowApp) catchSysCall() {
 		for sig := range signalChannel {
 			a.logger.Debug("Received signal: %s\n", sig.String())
 			a.ticker.Stop()
+			// here we can now save the DB to a file ... if we would use a non memory version.
 			a.logger.Debug("Ticker stopped and good bye!")
 			os.Exit(0)
 		}

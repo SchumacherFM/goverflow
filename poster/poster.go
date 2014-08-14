@@ -21,14 +21,16 @@ package poster
 
 import (
 	"encoding/json"
-	log "github.com/segmentio/go-log"
 	"github.com/SchumacherFM/goverflow/seapi"
+	log "github.com/segmentio/go-log"
 	"net/url"
 	"os"
 	"sort"
 	"strconv"
 	"time"
 )
+
+// just for testing, otherwise set to 0
 
 type poster struct {
 	logger *log.Logger
@@ -39,26 +41,22 @@ type poster struct {
 		TwitterConfigFile string
 		TweetTplFile      string
 	}
-	timeLastRun    int64
-	quotaRemaining int
-	so             *seapi.Seapi
-	gfdb           GFDB
-	twitter        Twitter
+	timeLastRun     int64
+	timeLastRunDiff int64
+	quotaRemaining  int
+	so              *seapi.Seapi
+	gfdb            GFDB
+	twitter         Twitter
 }
 
 func NewPoster(fileName *string, logger *log.Logger) *poster {
 
-	var err error
-	db := new(GFDB)
-	err = db.InitDb()
-	if nil != err {
-		panic("failed to create memDB: " + err.Error())
-	}
-
+	db := NewGFDB()
 	p := &poster{
-		so:     seapi.NewSeapi(),
-		gfdb:   *db,
-		logger: logger,
+		so:              seapi.NewSeapi(),
+		gfdb:            *db,
+		logger:          logger,
+		timeLastRunDiff: 0, // change this to >0 to get older results when starting the app
 	}
 
 	parseJsonConfig(p, fileName)
@@ -117,6 +115,7 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 
 	queryUrl, err := p.so.Query(soSearchResultCollection)
 	p.logger.Debug("Query URL: %s", queryUrl)
+	p.logger.Debug("Quota remaining: %d", soSearchResultCollection.Quota_remaining)
 	if nil != err {
 		p.logger.Emergency("L36: %s", err.Error())
 		return nil // no further processing in this routine
@@ -125,17 +124,17 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 	if 0 == len(soSearchResultCollection.Items) {
 		p.logger.Debug("No new questions posted since %s", p.getTimeLastRunRFC1123Z())
 		return nil
+	} else {
+		p.logger.Debug("Found new questions since %s.", p.getTimeLastRunRFC1123Z())
 	}
 
 	if 0 == soSearchResultCollection.Quota_remaining {
 		p.logger.Debug("Over quota :-( %s", p.getTimeLastRunRFC1123Z())
 		return nil
-	} else {
-		p.logger.Debug("Quota remaining: %d", soSearchResultCollection.Quota_remaining)
 	}
 
-	// now calculate the difference and return only the new items
-	var newItems = make(map[int]seapi.SearchResult)
+	// now calculate the difference and return only the new items; len is max length of a map
+	var newItems = make(map[int]seapi.SearchResult, len(soSearchResultCollection.Items))
 	for _, searchResult := range soSearchResultCollection.Items {
 		storedResult, err := p.gfdb.FindByQuestionId(searchResult.Question_id)
 		if nil != err {
@@ -151,7 +150,7 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 }
 
 func (p *poster) setTimeLastRun() {
-	p.timeLastRun = time.Now().Unix()-3600*12 // last part just for testing
+	p.timeLastRun = time.Now().Unix() - p.timeLastRunDiff
 }
 
 func (p *poster) getTimeLastRunRFC1123Z() string {

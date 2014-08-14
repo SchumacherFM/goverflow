@@ -23,16 +23,16 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	log "github.com/segmentio/go-log"
 	"github.com/SchumacherFM/goverflow/seapi"
 	"github.com/kurrik/oauth1a"
 	"github.com/kurrik/twittergo"
+	log "github.com/segmentio/go-log"
+	"html"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"text/template"
-	"html"
 )
 
 const (
@@ -67,7 +67,7 @@ func (t *Twitter) InitClient(logger *log.Logger, tweetTplFile string) {
 		os.Exit(2)
 	}
 }
-func (t *Twitter) doRequest(data *url.Values) (*twittergo.Tweet, error ) {
+func (t *Twitter) doRequest(data *url.Values) (*twittergo.Tweet, error) {
 	var (
 		err   error
 		req   *http.Request
@@ -105,9 +105,9 @@ func (t *Twitter) doRequest(data *url.Values) (*twittergo.Tweet, error ) {
 // returns error
 func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) (*twittergo.Tweet, error) {
 	var (
-		err   error
+		err      error
 		twString string
-		tweet *twittergo.Tweet
+		tweet    *twittergo.Tweet
 	)
 
 	twString, err = t.getTweet(sr)
@@ -137,7 +137,7 @@ func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) (*twittergo.Tweet, error
 
 func (t *Twitter) getTweet(sr *seapi.SearchResult) (string, error) {
 
-	if (len(sr.Title)+TCO_LENGTH) > TWEET_LENGTH { // just a simple check
+	if (len(sr.Title) + TCO_LENGTH) > TWEET_LENGTH { // just a simple check
 		return "", errors.New("Tweet is too long ...")
 	}
 

@@ -20,10 +20,10 @@
 package poster
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/cznic/kv"
 	"github.com/kurrik/twittergo"
-	"bytes"
 )
 
 const (
@@ -34,7 +34,17 @@ type GFDB struct {
 	*kv.DB
 }
 
-func (db *GFDB) InitDb() error {
+func NewGFDB() *GFDB {
+	db := new(GFDB)
+
+	err := db.initDb()
+	if nil != err {
+		panic("failed to create memDB: " + err.Error())
+	}
+	return db
+}
+
+func (db *GFDB) initDb() error {
 	var err error
 	kvOpt := &kv.Options{}
 	db.DB, err = kv.CreateMem(kvOpt)
