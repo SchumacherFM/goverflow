@@ -28,37 +28,37 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "goverflow"
-	app.Version = "0.0.1"
+	app.Version = "0.0.2"
 	app.Usage = "Searches the stackexchange API and tweets new questions. App runs in the background or daemon."
 	app.Action = showHelp
-	app.Flags = []cli.Flag{
-		cli.IntFlag{
-			Name:  "seconds,s",
-			Value: 10,
-			Usage: "Sleep duration in Seoncds, recommended: (3600*24)/300; quota is 300 queries / day",
-		},
-		cli.IntFlag{
-			Name:  "logLevel,ll",
-			Value: 0,
-			Usage: "0 Debug, 1 Info, 2 Notice -> 7 Emergency",
-		},
-		cli.StringFlag{
-			Name:  "logFile,lf",
-			Value: "",
-			Usage: "Log to file or if empty to os.Stderr",
-		},
-		cli.StringFlag{
-			Name:  "configFile,c",
-			Value: "config.json",
-			Usage: "The JSON config file",
-		},
-	}
 	app.Commands = []cli.Command{
 		{
 			Name:      "run",
 			ShortName: "r",
-			Usage:     "Run the gin proxy in the current working directory",
+			Usage:     "Run the goverflow app in the current working directory. `help run` for more information",
 			Action:    mainAction,
+			Flags:     []cli.Flag{
+				cli.IntFlag{
+					Name:  "seconds,s",
+					Value: 288,
+					Usage: "Sleep duration in Seoncds, recommended: (3600*24)/300; quota is 300 queries / day",
+				},
+				cli.IntFlag{
+					Name:  "logLevel,l",
+					Value: 0,
+					Usage: "0 Debug, 1 Info, 2 Notice -> 7 Emergency",
+				},
+				cli.StringFlag{
+					Name:  "logFile,f",
+					Value: "",
+					Usage: "Log to file or if empty to os.Stderr",
+				},
+				cli.StringFlag{
+					Name:  "configFile,c",
+					Value: "config.json",
+					Usage: "The JSON config file",
+				},
+			},
 		},
 	}
 

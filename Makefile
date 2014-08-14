@@ -1,6 +1,6 @@
 GOFMT=gofmt -s
 GOFILES=$(wildcard *.go **/*.go)
-PRERELEASE=alpha
+PRERELEASE=stable
 
 default: build
 

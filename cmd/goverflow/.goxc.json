@@ -1,6 +1,9 @@
 {
+	"AppName": "goverflow",
 	"Arch": "amd64 386",
-	"Os": "darwin linux windows",
-	"PackageVersion": "0.0.1",
-	"ConfigVersion": "0.9"
+	"Os": "darwin linux",
+	"PackageVersion": "0.0.2",
+	"ConfigVersion": "0.9",
+	"PrereleaseInfo" : "",
+	"BranchName" : ""
 }
