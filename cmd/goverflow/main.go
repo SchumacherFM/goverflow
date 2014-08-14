@@ -70,10 +70,9 @@ func showHelp(c *cli.Context) {
 }
 
 func mainAction(c *cli.Context) {
-
 	a := NewGoverflowApp()
-	a.SetInterval(c.GlobalInt("seconds"))
-	a.SetLogFile(c.GlobalString("logFile"), c.GlobalInt("logLevel"))
-	a.SetConfigFileName(c.GlobalString("configFile"))
+	a.SetInterval(c.Int("seconds"))
+	a.SetLogFile(c.String("logFile"), c.Int("logLevel"))
+	a.SetConfigFileName(c.String("configFile"))
 	a.Goverflow()
 }
