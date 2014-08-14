@@ -68,6 +68,49 @@ You can replace the hash tag with any other wordings. Stick to the max length of
 
 For advanced templating please a look here: [http://golang.org/pkg/text/template/](http://golang.org/pkg/text/template/)
 
+# Run
+
+```
+$ ./goverflow
+NAME:
+   goverflow - Searches the stackexchange API and tweets new questions. App runs in the background or daemon.
+
+USAGE:
+   goverflow [global options] command [command options] [arguments...]
+
+VERSION:
+   0.0.2
+
+COMMANDS:
+   run, r	Run the goverflow app in the current working directory. `help run` for more information
+   help, h	Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h		show help
+   --version, -v	print the version
+```
+
+```
+$ ./goverflow help run
+NAME:
+   run - Run the goverflow app in the current working directory. `help run` for more information
+
+USAGE:
+   command run [command options] [arguments...]
+
+OPTIONS:
+   --seconds, -s '288'			Sleep duration in Seoncds, recommended: (3600*24)/300; quota is 300 queries / day
+   --logLevel, -l '0'			0 Debug, 1 Info, 2 Notice -> 7 Emergency
+   --logFile, -f 			Log to file or if empty to os.Stderr
+   --configFile, -c 'config.json'	The JSON config file
+```
+
+To run it in the background on any *nix system:
+
+```
+$ ./goverflow run -f mylog.log &
+```
+
 ## Build
 
 Using [https://github.com/laher/goxc](https://github.com/laher/goxc)
