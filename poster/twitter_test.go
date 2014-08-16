@@ -16,14 +16,12 @@
 
     Contribute @ https://github.com/SchumacherFM/goverflow
 */
-
+// @todo add more tests
 package poster
 
 import (
 	"github.com/SchumacherFM/goverflow/seapi"
 	"testing"
-
-	"fmt"
 )
 
 var (
@@ -43,7 +41,10 @@ func TestGetTweet(t *testing.T) {
 	}
 
 	tweet, err := twitter.getTweet(sr)
-
-	fmt.Printf("%#v %s", tweet, err)
-	fmt.Print(logTestCollector)
+	if nil != err {
+		t.Error(err)
+	}
+	if "Golang test tweet\nhttp://gotest.com\n#golang" != tweet {
+		t.Error("Not equal to expected", tweet)
+	}
 }

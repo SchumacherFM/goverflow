@@ -33,6 +33,7 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"path/filepath"
 )
 
 const (
@@ -85,8 +86,8 @@ func (t *Twitter) InitClient(logger *log.Logger, tweetTplFile string) {
 	}
 	user := oauth1a.NewAuthorizedConfig(t.AccessToken, t.AccessTokenSecret)
 	t.client = twittergo.NewClient(config, user)
-
-	t.tweetTpl, err = template.New(tweetTplFile).ParseFiles(tweetTplFile)
+	tName := filepath.Base(tweetTplFile)
+	t.tweetTpl, err = template.New(tName).ParseFiles(tweetTplFile)
 	if nil != err {
 		t.logger.Emergency("Cannot open tweet template file %s", tweetTplFile)
 		os.Exit(2)
