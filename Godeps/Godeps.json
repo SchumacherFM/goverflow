@@ -1,0 +1,55 @@
+{
+	"ImportPath": "github.com/SchumacherFM/goverflow",
+	"GoVersion": "go1.3.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/cznic/bufs",
+			"Rev": "fb7ccae8e7c7361e0e29924984a64202750c2bf6"
+		},
+		{
+			"ImportPath": "github.com/cznic/exp/lldb",
+			"Rev": "59a405df3b2cea1dfe137a5e38abce45c983eba4"
+		},
+		{
+			"ImportPath": "github.com/cznic/fileutil",
+			"Rev": "25290d7474c5b9ac1984d2dc66782293610c945d"
+		},
+		{
+			"ImportPath": "github.com/cznic/kv",
+			"Rev": "d820b54c02f388eb973582702255b7caa42d2963"
+		},
+		{
+			"ImportPath": "github.com/cznic/mathutil",
+			"Rev": "752f6900cf50582d6c0a0ac886b89bc92fa97bbd"
+		},
+		{
+			"ImportPath": "github.com/cznic/sortutil",
+			"Rev": "371d81adc0f16874576e018e60704d3c92d55f8c"
+		},
+		{
+			"ImportPath": "github.com/cznic/zappy",
+			"Rev": "23a2378a863e3f50feae257446a40e2aed993c13"
+		},
+		{
+			"ImportPath": "github.com/kurrik/json",
+			"Rev": "f63ef626c5ffbfcd5dd5430c18c8b2eb14593c38"
+		},
+		{
+			"ImportPath": "github.com/kurrik/oauth1a",
+			"Rev": "fc2542bc5f2532ed4a437960d2d51ff6e18a5cb6"
+		},
+		{
+			"ImportPath": "github.com/kurrik/twittergo",
+			"Rev": "f56b9ac18bee46bb8dd01832dfee57bf1c9dc33c"
+		},
+		{
+			"ImportPath": "github.com/mreiferson/go-httpclient",
+			"Rev": "c121dfe45d66997e43e25a6823fbe7466c8403fe"
+		},
+		{
+			"ImportPath": "github.com/segmentio/go-log",
+			"Comment": "v1.3.0-1-ge4f30ae",
+			"Rev": "e4f30aef6f663d06120d6c4360e1398d4621f7c3"
+		}
+	]
+}
