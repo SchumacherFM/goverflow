@@ -20,24 +20,24 @@
 package poster
 
 import (
-	"testing"
-	"github.com/SchumacherFM/goverflow/testHelper"
-	log "github.com/segmentio/go-log"
-	"github.com/kurrik/twittergo"
 	"github.com/SchumacherFM/goverflow/seapi"
+	"github.com/SchumacherFM/goverflow/testHelper"
+	"github.com/kurrik/twittergo"
+	log "github.com/segmentio/go-log"
 	"net/url"
 	"strings"
+	"testing"
 )
 
 var (
-	testPoster *poster
-	fileName = "./testData/config.json"
-	logger *log.Logger
-	lm       = &LoggerMock{}
+	testPoster       *poster
+	fileName         = "./testData/config.json"
+	logger           *log.Logger
+	lm               = &LoggerMock{}
 	logTestCollector []string
 )
 
-type LoggerMock struct {}
+type LoggerMock struct{}
 
 func (lm *LoggerMock) Write(p []byte) (n int, err error) {
 	logTestCollector = append(logTestCollector, string(p))
@@ -45,7 +45,6 @@ func (lm *LoggerMock) Write(p []byte) (n int, err error) {
 }
 
 type TwitterMock struct {
-
 }
 
 func (t *TwitterMock) GetTwitter() *Twitter {

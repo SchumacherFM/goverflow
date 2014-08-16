@@ -2,9 +2,9 @@
 package seapi
 
 import (
+	"github.com/SchumacherFM/goverflow/testHelper"
 	"strings"
 	"testing"
-	"github.com/SchumacherFM/goverflow/testHelper"
 )
 
 var (

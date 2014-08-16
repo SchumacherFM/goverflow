@@ -151,7 +151,7 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 }
 
 func (p *poster) setTimeLastRun() {
-	p.timeLastRun = time.Now().Unix()-p.timeLastRunDiff
+	p.timeLastRun = time.Now().Unix() - p.timeLastRunDiff
 }
 
 func (p *poster) getTimeLastRunRFC1123Z() string {
