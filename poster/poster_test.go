@@ -49,7 +49,7 @@ type TwitterMock struct {
 }
 
 func (t *TwitterMock) GetTwitter() *Twitter {
-	return &Twitter{}
+	return NewTwitter()
 }
 
 func (t *TwitterMock) GetConfig() map[string]string {

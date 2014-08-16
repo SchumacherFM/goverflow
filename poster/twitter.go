@@ -58,6 +58,10 @@ type Twitter struct {
 	tweetTpl          *template.Template
 }
 
+func NewTwitter() *Twitter {
+	return &Twitter{}
+}
+
 func (t *Twitter) GetTwitter() *Twitter {
 	return t
 }

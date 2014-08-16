@@ -58,7 +58,7 @@ func NewPoster(fileName *string, logger *log.Logger) *poster {
 		logger:          logger,
 		timeLastRunDiff: 0, // change this to >0 to get older results when starting the app
 	}
-	p.twitter = &Twitter{}
+	p.twitter = NewTwitter()
 
 	parseJsonConfig(p, fileName)
 	parseTwitterJsonConfig(p.twitter.GetTwitter(), p.Config.TwitterConfigFile)
