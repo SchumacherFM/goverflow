@@ -162,7 +162,7 @@ func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) (*twittergo.Tweet, error
 
 func (t *Twitter) getTweet(sr *seapi.SearchResult) (string, error) {
 
-	if (len(sr.Title)+TCO_LENGTH) > TWEET_LENGTH { // just a simple check
+	if (len(sr.Title) + TCO_LENGTH) > TWEET_LENGTH { // just a simple check
 		return "", errors.New("Tweet is too long ...")
 	}
 
