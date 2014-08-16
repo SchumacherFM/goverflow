@@ -31,9 +31,9 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
-	"path/filepath"
 )
 
 const (
