@@ -1,0 +1,7 @@
+{
+	"host":"http://api.stackexchange.com",
+	"apiVersion":	"2.2",
+	"searchParams":	"order=desc&sort=creation&tagged=go&site=stackoverflow",
+	"twitterConfigFile": "./testData/config.twitter.json",
+	"tweetTplFile": "./testData/tweet.tpl.txt"
+}

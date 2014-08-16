@@ -40,6 +40,14 @@ const (
 	TCO_LENGTH   = 24 // officially it's 20 chars ... but lets add 4 for back up
 )
 
+type TwitterInterface interface {
+	GetTwitter() *Twitter
+	GetConfig() map[string]string
+	InitClient(logger *log.Logger, tweetTplFile string)
+	doRequest(data *url.Values) (*twittergo.Tweet, error)
+	TweetQuestion(sr *seapi.SearchResult) (*twittergo.Tweet, error)
+}
+
 type Twitter struct {
 	ConsumerKey       string
 	ConsumerSecret    string
@@ -48,6 +56,19 @@ type Twitter struct {
 	client            *twittergo.Client
 	logger            *log.Logger
 	tweetTpl          *template.Template
+}
+
+func (t *Twitter) GetTwitter() *Twitter {
+	return t
+}
+
+func (t *Twitter) GetConfig() map[string]string {
+	cm := make(map[string]string, 4)
+	cm["ConsumerKey"] = t.ConsumerKey
+	cm["ConsumerSecret"] = t.ConsumerSecret
+	cm["AccessToken"] = t.AccessToken
+	cm["AccessTokenSecret"] = t.AccessTokenSecret
+	return cm
 }
 
 func (t *Twitter) InitClient(logger *log.Logger, tweetTplFile string) {
@@ -137,7 +158,7 @@ func (t *Twitter) TweetQuestion(sr *seapi.SearchResult) (*twittergo.Tweet, error
 
 func (t *Twitter) getTweet(sr *seapi.SearchResult) (string, error) {
 
-	if (len(sr.Title) + TCO_LENGTH) > TWEET_LENGTH { // just a simple check
+	if (len(sr.Title)+TCO_LENGTH) > TWEET_LENGTH { // just a simple check
 		return "", errors.New("Tweet is too long ...")
 	}
 

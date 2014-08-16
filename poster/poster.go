@@ -46,7 +46,7 @@ type poster struct {
 	quotaRemaining  int
 	so              *seapi.Seapi
 	gfdb            GFDB
-	twitter         Twitter
+	twitter         TwitterInterface
 }
 
 func NewPoster(fileName *string, logger *log.Logger) *poster {
@@ -58,9 +58,10 @@ func NewPoster(fileName *string, logger *log.Logger) *poster {
 		logger:          logger,
 		timeLastRunDiff: 0, // change this to >0 to get older results when starting the app
 	}
+	p.twitter = &Twitter{}
 
 	parseJsonConfig(p, fileName)
-	parseTwitterJsonConfig(&p.twitter, p.Config.TwitterConfigFile)
+	parseTwitterJsonConfig(p.twitter.GetTwitter(), p.Config.TwitterConfigFile)
 
 	p.so.Host = p.Config.Host
 	p.so.Version = p.Config.ApiVersion
@@ -150,7 +151,7 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 }
 
 func (p *poster) setTimeLastRun() {
-	p.timeLastRun = time.Now().Unix() - p.timeLastRunDiff
+	p.timeLastRun = time.Now().Unix()-p.timeLastRunDiff
 }
 
 func (p *poster) getTimeLastRunRFC1123Z() string {
