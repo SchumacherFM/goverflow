@@ -67,9 +67,8 @@ func NewSeapi() (seapi *Seapi) {
 	return
 }
 
-func (s *Seapi) SetTransport(t http.RoundTripper) *Seapi {
+func (s *Seapi) SetTransport(t http.RoundTripper) {
 	s.transport = t
-	return s
 }
 
 func (s *Seapi) getTransport() http.RoundTripper {
