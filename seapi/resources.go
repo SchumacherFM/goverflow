@@ -30,21 +30,21 @@ type Owner struct {
 }
 
 type SearchResult struct {
-	Tags                 []string
-	Owner                Owner
-	Is_answered          bool
-	View_count           int
-	Answer_count         int
-	Score                int
-	Last_activity_date   int64
-	Creation_date        int64
-	Question_id          int
-	Link                 string
-	Title                string
+	Tags               []string
+	Owner              Owner
+	Is_answered        bool
+	View_count         int
+	Answer_count       int
+	Score              int
+	Last_activity_date int64
+	Creation_date      int64
+	Question_id        int
+	Link               string
+	Title              string
 }
 
 type SearchResultCollection struct {
-	Items         []SearchResult
+	Items           []SearchResult
 	Has_more        bool
 	Quota_max       int
 	Quota_remaining int

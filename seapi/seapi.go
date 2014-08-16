@@ -119,29 +119,29 @@ func (s *Seapi) ResetQuery() {
 	}
 }
 
-func (s *Seapi) Query(collection interface{}) (qryUrl string, error error) {
+func (s *Seapi) Query(collection interface{}) (qryUrl string, err error) {
 
 	client := &http.Client{
 		Transport: s.getTransport(),
 		Timeout:   time.Second * API_TIMEOUT,
 	}
 	qryUrl = s.getQueryUrl()
-	response, error := client.Get(qryUrl)
+	response, err := client.Get(qryUrl)
 	defer response.Body.Close()
-	if nil != error {
-		return
+	if nil != err {
+		return "", err
 	}
 	if 200 != response.StatusCode {
 		return "", errors.New(response.Status + " @ " + qryUrl)
 	}
 
-	apiContent, error := ioutil.ReadAll(response.Body)
+	apiContent, err := ioutil.ReadAll(response.Body)
 
-	if error != nil {
+	if err != nil {
 		return
 	}
-	error = json.Unmarshal(apiContent, collection)
-	if error != nil {
+	err = json.Unmarshal(apiContent, collection)
+	if err != nil {
 		return
 	}
 	return

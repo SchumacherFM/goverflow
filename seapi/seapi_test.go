@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -20,15 +21,6 @@ func TestGetQueryUrlEmptyHttps(t *testing.T) {
 	}
 }
 
-func TestGetQueryUrlEmptyHttp(t *testing.T) {
-
-	actual := seapi.getQueryUrl()
-	if expected := "http://api.stackexchange.com/"; expected != actual {
-		t.Error("Expected:", expected, " but got: ", actual)
-	}
-
-}
-
 func TestQueryPrepare1(t *testing.T) {
 	seapi.AddParam("order", "desc")
 	seapi.AddParam("sort", "creation")
@@ -39,7 +31,7 @@ func TestQueryPrepare1(t *testing.T) {
 	if expected != actual {
 		t.Error("Expected:", expected, " but got: ", actual)
 	}
-	seapi.resetQuery()
+	seapi.ResetQuery()
 }
 
 func TestQueryPrepare2(t *testing.T) {
@@ -52,7 +44,7 @@ func TestQueryPrepare2(t *testing.T) {
 	if expected != actual {
 		t.Error("Expected:", expected, " but got: ", actual)
 	}
-	seapi.resetQuery()
+	seapi.ResetQuery()
 }
 
 func TestResetQuery(t *testing.T) {
@@ -67,7 +59,7 @@ func TestResetQuery(t *testing.T) {
 	if len1a != 3 {
 		t.Error("CurrentMethod Expected 3 params but got ", len1a)
 	}
-	seapi.resetQuery()
+	seapi.ResetQuery()
 	len2 := len(seapi.currentParams)
 	if len2 != 0 {
 		t.Error("CurrentParams: Expected 0 params but got ", len2)
@@ -79,7 +71,7 @@ func TestResetQuery(t *testing.T) {
 }
 
 func TestQuery1(t *testing.T) {
-
+	seapi.Host = "http://api.stackexchange.com"
 	seapi.AddParam("order", "desc")
 	seapi.AddParam("sort", "creation")
 	seapi.SetMethod([]string{"search"})
@@ -88,7 +80,7 @@ func TestQuery1(t *testing.T) {
 	defer httpTS.Close()
 
 	searchResult := &SearchResultCollection{}
-	qryErr := seapi.Query(searchResult)
+	qryUrl, qryErr := seapi.Query(searchResult)
 
 	if nil != qryErr {
 		t.Fatal(qryErr.Error())
@@ -96,6 +88,14 @@ func TestQuery1(t *testing.T) {
 		if len(searchResult.Items) == 0 {
 			t.Error("SearchResultCollection.Items is zero :-(")
 		}
+	}
+
+	if false == strings.Contains(qryUrl, ".com/search") {
+		t.Error("Cannot find .com/search in qryUrl")
+	}
+
+	if 300 != searchResult.Quota_max {
+		t.Error("Cannot parse Quota Max")
 	}
 
 }
