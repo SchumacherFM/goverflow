@@ -7,6 +7,8 @@ You need a twitter account and you need to create a new App [https://apps.twitte
 You do NOT need a StackExchange account. The search API can be used up to 300 request per 24h. That means to check every
 288 seconds for new questions.
 
+Binaries: [https://github.com/SchumacherFM/goverflow/releases](https://github.com/SchumacherFM/goverflow/releases)
+
 ### What can I search on the StackExchange API?
 
 Please see [https://api.stackexchange.com/docs/search](https://api.stackexchange.com/docs/search)
@@ -117,7 +119,7 @@ Using [https://github.com/laher/goxc](https://github.com/laher/goxc)
 
 Setup go/src for darwin, linux and windows [http://dave.cheney.net/2013/07/09/an-introduction-to-cross-compilation-with-go-1-1](http://dave.cheney.net/2013/07/09/an-introduction-to-cross-compilation-with-go-1-1)
 
-Run `make build`. If you are interested in pre-compiled binaries, ping me.
+Run `make build`.
 
 # Contributing
 
