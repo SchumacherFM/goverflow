@@ -79,7 +79,7 @@ USAGE:
    goverflow [global options] command [command options] [arguments...]
 
 VERSION:
-   0.0.2
+   0.x.x
 
 COMMANDS:
    run, r	Run the goverflow app in the current working directory. `help run` for more information

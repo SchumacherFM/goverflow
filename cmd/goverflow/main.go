@@ -28,7 +28,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "goverflow"
-	app.Version = "0.0.2"
+	app.Version = "0.0.4"
 	app.Usage = "Searches the stackexchange API and tweets new questions. App runs in the background or daemon."
 	app.Action = showHelp
 	app.Commands = []cli.Command{
