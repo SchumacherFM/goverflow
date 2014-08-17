@@ -22,10 +22,14 @@ import (
 	"github.com/codegangsta/cli"
 	. "github.com/SchumacherFM/goverflow"
 	"os"
-
+	"runtime"
 )
 
 func main() {
+	if "" == os.Getenv("GOMAXPROCS") {
+		runtime.GOMAXPROCS(runtime.NumCPU())
+	}
+
 	app := cli.NewApp()
 	app.Name = "goverflow"
 	app.Version = "0.0.4"
