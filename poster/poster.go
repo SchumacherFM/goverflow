@@ -28,6 +28,7 @@ import (
 	"sort"
 	"strconv"
 	"time"
+	"net"
 )
 
 // just for testing, otherwise set to 0
@@ -77,9 +78,20 @@ func NewPoster(fileName *string, logger *log.Logger) *poster {
 	return p
 }
 
+func (p *poster) checkNetwork() error {
+	timeout := time.Second * 10
+	_, err := net.DialTimeout("tcp", "google.com:80", timeout)
+	return err
+}
+
 // Routineposter runs in a go routine
 func (p *poster) RoutinePoster() error {
 	defer p.setTimeLastRun()
+	if nErr := p.checkNetwork(); nil != nErr {
+		p.logger.Info("E.T. cannot phone home!\n%s", nErr)
+		return nil // do nothing
+	}
+
 	soSearchResultCollection := p.routineGetSearchCollection()
 	if nil == soSearchResultCollection {
 		return nil // no further processing, already logged
@@ -151,7 +163,7 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 }
 
 func (p *poster) setTimeLastRun() {
-	p.timeLastRun = time.Now().Unix() - p.timeLastRunDiff
+	p.timeLastRun = time.Now().Unix()-p.timeLastRunDiff
 }
 
 func (p *poster) getTimeLastRunRFC1123Z() string {
