@@ -23,12 +23,12 @@ import (
 	"encoding/json"
 	"github.com/SchumacherFM/goverflow/seapi"
 	log "github.com/segmentio/go-log"
+	"net"
 	"net/url"
 	"os"
 	"sort"
 	"strconv"
 	"time"
-	"net"
 )
 
 // just for testing, otherwise set to 0
@@ -163,7 +163,7 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 }
 
 func (p *poster) setTimeLastRun() {
-	p.timeLastRun = time.Now().Unix()-p.timeLastRunDiff
+	p.timeLastRun = time.Now().Unix() - p.timeLastRunDiff
 }
 
 func (p *poster) getTimeLastRunRFC1123Z() string {
