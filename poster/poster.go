@@ -130,10 +130,13 @@ func (p *poster) routineGetSearchCollection() map[int]seapi.SearchResult {
 	p.logger.Debug("Query URL: %s", queryUrl)
 	p.logger.Debug("Quota remaining: %d", soSearchResultCollection.Quota_remaining)
 	if nil != err {
-		p.logger.Emergency("L36: %s", err.Error())
+		p.logger.Emergency("L133: %s", err.Error())
 		return nil // no further processing in this routine
 	}
-
+	if "" == queryUrl {
+		p.logger.Emergency("L137: queryUrl is empty")
+		return nil // no further processing in this routine
+	}
 	if 0 == len(soSearchResultCollection.Items) {
 		p.logger.Debug("No new questions posted since %s", p.getTimeLastRunRFC1123Z())
 		return nil

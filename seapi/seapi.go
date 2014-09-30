@@ -127,6 +127,11 @@ func (s *Seapi) Query(collection interface{}) (qryUrl string, err error) {
 	}
 	qryUrl = s.getQueryUrl()
 	response, err := client.Get(qryUrl)
+
+	if nil == response {
+		return "", nil
+	}
+
 	defer response.Body.Close()
 	if nil != err {
 		return "", err
