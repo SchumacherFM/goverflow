@@ -82,7 +82,7 @@ func TestSmallRand(t *testing.T) {
 	rand.Seed(27354294)
 	for n := 1; n < 20000; n += 23 {
 		b := make([]byte, n)
-		for i, _ := range b {
+		for i := range b {
 			b[i] = uint8(rand.Uint32())
 		}
 		if err := roundtrip(b, nil, nil); err != nil {
@@ -94,7 +94,7 @@ func TestSmallRand(t *testing.T) {
 func TestSmallRegular(t *testing.T) {
 	for n := 1; n < 20000; n += 23 {
 		b := make([]byte, n)
-		for i, _ := range b {
+		for i := range b {
 			b[i] = uint8(i%10 + 'a')
 		}
 		if err := roundtrip(b, nil, nil); err != nil {

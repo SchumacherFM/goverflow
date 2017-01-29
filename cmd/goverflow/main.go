@@ -19,10 +19,11 @@
 package main
 
 import (
-	"github.com/codegangsta/cli"
-	. "github.com/SchumacherFM/goverflow"
 	"os"
 	"runtime"
+
+	. "github.com/SchumacherFM/goverflow"
+	"github.com/codegangsta/cli"
 )
 
 func main() {
@@ -41,7 +42,7 @@ func main() {
 			ShortName: "r",
 			Usage:     "Run the goverflow app in the current working directory. `help run` for more information",
 			Action:    mainAction,
-			Flags:     []cli.Flag{
+			Flags: []cli.Flag{
 				cli.IntFlag{
 					Name:  "seconds,s",
 					Value: 288,

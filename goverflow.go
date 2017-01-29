@@ -20,12 +20,13 @@
 package goverflow
 
 import (
-	"github.com/SchumacherFM/goverflow/poster"
-	log "github.com/segmentio/go-log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/SchumacherFM/goverflow/poster"
+	log "github.com/segmentio/go-log"
 )
 
 type goverflowApp struct {
@@ -89,7 +90,7 @@ func (a *goverflowApp) Goverflow() {
 
 	thePoster := poster.NewPoster(&a.configFileName, a.GetLogger())
 	go thePoster.RoutinePoster()
-	for _ = range a.ticker.C {
+	for range a.ticker.C {
 		go thePoster.RoutinePoster()
 	}
 }

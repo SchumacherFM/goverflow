@@ -16,8 +16,9 @@ package falloc
 
 import (
 	"bytes"
-	"github.com/cznic/fileutil/storage"
 	"sync"
+
+	"github.com/cznic/fileutil/storage"
 )
 
 // Handle is a reference to a block in a file/store.

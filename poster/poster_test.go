@@ -20,13 +20,14 @@
 package poster
 
 import (
+	"net/url"
+	"strings"
+	"testing"
+
 	"github.com/SchumacherFM/goverflow/seapi"
 	"github.com/SchumacherFM/goverflow/testHelper"
 	"github.com/kurrik/twittergo"
 	log "github.com/segmentio/go-log"
-	"net/url"
-	"strings"
-	"testing"
 )
 
 var (

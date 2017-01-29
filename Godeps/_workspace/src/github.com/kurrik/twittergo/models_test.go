@@ -50,10 +50,10 @@ func TestRateLimitError(t *testing.T) {
 	var resp = getResponse(429, body)
 	resp.Status = "Too Many Requests"
 	resp.Header = http.Header(map[string][]string{
-		"Content-Length":         []string{"56"},
-		"X-Rate-Limit-Limit":     []string{"180"},
-		"X-Rate-Limit-Remaining": []string{"0"},
-		"X-Rate-Limit-Reset":     []string{"1369331745"},
+		"Content-Length":         {"56"},
+		"X-Rate-Limit-Limit":     {"180"},
+		"X-Rate-Limit-Remaining": {"0"},
+		"X-Rate-Limit-Reset":     {"1369331745"},
 	})
 
 	// Test
@@ -198,4 +198,3 @@ func TestNonJSONErrorWith502(t *testing.T) {
 		t.Errorf("Error should be text of response body")
 	}
 }
-

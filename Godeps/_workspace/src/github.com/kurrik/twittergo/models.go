@@ -17,7 +17,6 @@ package twittergo
 import (
 	"compress/gzip"
 	"fmt"
-	"github.com/kurrik/json"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -25,6 +24,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/kurrik/json"
 )
 
 const (

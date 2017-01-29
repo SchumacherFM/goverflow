@@ -11,10 +11,11 @@ package main
 import (
 	"bufio"
 	"flag"
-	"github.com/cznic/mathutil"
 	"log"
 	"math"
 	"os"
+
+	"github.com/cznic/mathutil"
 )
 
 /*

@@ -21,13 +21,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/kurrik/oauth1a"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/kurrik/oauth1a"
 )
 
 // Implements a Twitter client.

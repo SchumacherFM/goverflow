@@ -20,8 +20,9 @@
 package poster
 
 import (
-	"github.com/SchumacherFM/goverflow/seapi"
 	"testing"
+
+	"github.com/SchumacherFM/goverflow/seapi"
 )
 
 var (

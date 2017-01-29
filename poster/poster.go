@@ -21,14 +21,15 @@ package poster
 
 import (
 	"encoding/json"
-	"github.com/SchumacherFM/goverflow/seapi"
-	log "github.com/segmentio/go-log"
 	"net"
 	"net/url"
 	"os"
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/SchumacherFM/goverflow/seapi"
+	log "github.com/segmentio/go-log"
 )
 
 // just for testing, otherwise set to 0

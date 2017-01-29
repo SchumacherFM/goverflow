@@ -8,6 +8,5 @@ package fileutil
 
 // Pull test dependencies too.
 // Enables easy 'go test X' after 'go get X'
-import (
+
 // nothing yet
-)

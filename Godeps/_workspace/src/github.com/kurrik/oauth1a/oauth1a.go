@@ -68,7 +68,7 @@ func (HmacSha1Signer) encodeParameters(params map[string]string) string {
 	keys := make([]string, len(params))
 	encodedParts := make([]string, len(params))
 	i := 0
-	for key, _ := range params {
+	for key := range params {
 		keys[i] = key
 		i += 1
 	}

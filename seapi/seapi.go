@@ -23,12 +23,13 @@ package seapi
 import (
 	"encoding/json"
 	"errors"
-	httpclient "github.com/mreiferson/go-httpclient"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	httpclient "github.com/mreiferson/go-httpclient"
 )
 
 const (

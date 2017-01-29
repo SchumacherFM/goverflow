@@ -296,7 +296,7 @@ func (c *Cache) writer() {
 }
 
 func (c *Cache) cleaner(limit int) {
-	for _ = range c.clean {
+	for range c.clean {
 		var item *list.Element
 		for {
 			c.lock.Lock() // X1+

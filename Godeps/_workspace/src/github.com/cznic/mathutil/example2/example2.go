@@ -10,13 +10,14 @@ package main
 
 import (
 	"bytes"
-	"github.com/cznic/mathutil"
 	"image"
 	"image/png"
 	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
+
+	"github.com/cznic/mathutil"
 )
 
 // $ go run example2.go # view rand.png and rnd.png by your favorite pic viewer

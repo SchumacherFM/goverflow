@@ -26,166 +26,166 @@ type TestCase struct {
 }
 
 var errors = map[string]TestCase{
-	"HTML": TestCase{
+	"HTML": {
 		Raw:    "<!DOCTYPE html><html><body>Foo</body></html>",
 		Result: "Unrecognized type in ' --><<-- !DOCTYPE '",
 	},
-	"Blank": TestCase{
+	"Blank": {
 		Raw:    "",
 		Result: "Unrecognized type in ' --><-- '",
 	},
-	"Empty": TestCase{
+	"Empty": {
 		Raw:    "    ",
 		Result: "Unrecognized type in '    --><-- '",
 	},
 }
 
 var cases = map[string]TestCase{
-	"Number": TestCase{
+	"Number": {
 		Raw:    "1234",
 		Result: int64(1234),
 	},
-	"Number - negative": TestCase{
+	"Number - negative": {
 		Raw:    "-1234",
 		Result: int64(-1234),
 	},
-	"Number - float": TestCase{
+	"Number - float": {
 		Raw:    "1234.5678",
 		Result: float64(1234.5678),
 	},
-	"Number - negative float": TestCase{
+	"Number - negative float": {
 		Raw:    "-1234.5678",
 		Result: float64(-1234.5678),
 	},
-	"String": TestCase{
+	"String": {
 		Raw:    "\"foobar\"",
 		Result: "foobar",
 	},
-	"String with encoded UTF-8": TestCase{
+	"String with encoded UTF-8": {
 		Raw:    "\"\\u6211\\u7231\\u4f60\"",
 		Result: "我爱你",
 	},
-	"String with unencoded UTF-8": TestCase{
+	"String with unencoded UTF-8": {
 		Raw:    "\"我爱你\"",
 		Result: "我爱你",
 	},
-	"String with big-U encoded multibyte UTF-8": TestCase{
+	"String with big-U encoded multibyte UTF-8": {
 		Raw:    "\"\\U0001D11E\"",
 		Result: "𝄞",
 	},
-	"String with octal encoded multibyte UTF-8": TestCase{
+	"String with octal encoded multibyte UTF-8": {
 		Raw:    "\"\\360\\235\\204\\236\"",
 		Result: "𝄞",
 	},
-	"String with hex encoded multibyte UTF-8": TestCase{
+	"String with hex encoded multibyte UTF-8": {
 		Raw:    "\"\\xF0\\x9D\\x84\\x9E\"",
 		Result: "𝄞",
 	},
-	"String with hex encoded single byte UTF-8": TestCase{
+	"String with hex encoded single byte UTF-8": {
 		Raw:    "\"\\xE2\\x9D\\xA4\"",
 		Result: "❤",
 	},
-	"String with encoded UTF-8 and backslash": TestCase{
+	"String with encoded UTF-8 and backslash": {
 		Raw:    "\"10\\\\10 ~ \\u2764\"",
 		Result: "10\\10 ~ ❤",
 	},
-	"Invalid string with small-U encoded multibyte UTF-8": TestCase{
+	"Invalid string with small-U encoded multibyte UTF-8": {
 		Raw:    "\"\\uD834\\uDD1E\"",
 		Result: "𝄞",
 	},
-	"String with backslash": TestCase{
+	"String with backslash": {
 		Raw:    "\"10\\\\10\"",
 		Result: "10\\10",
 	},
-	"String with backslash and tab": TestCase{
+	"String with backslash and tab": {
 		Raw: "\"10\\\\\t10\"",
 		Result: "10\\	10",
 	},
-	"String with backslash and backspace": TestCase{
+	"String with backslash and backspace": {
 		Raw:    "\"10\\\\\b10\"",
 		Result: "10\\\b10",
 	},
-	"String with escaped forward slash": TestCase{
+	"String with escaped forward slash": {
 		Raw:    "\"\\\\\\/\"",
 		Result: "\\/",
 	},
-	"String with just backslash": TestCase{
+	"String with just backslash": {
 		Raw:    "\"\\\\\"",
 		Result: "\\",
 	},
-	"String with encoded emoji": TestCase{
-		Raw: "\"EMOJI \\ud83d\\ude04 \\ud83d\\ude03 \\ud83d\\ude00 \\ud83d\\ude0a\"",
+	"String with encoded emoji": {
+		Raw:    "\"EMOJI \\ud83d\\ude04 \\ud83d\\ude03 \\ud83d\\ude00 \\ud83d\\ude0a\"",
 		Result: "EMOJI 😄 😃 😀 😊",
 	},
-	"Object": TestCase{
+	"Object": {
 		Raw: "{\"foo\":\"bar\"}",
 		Result: map[string]interface{}{
 			"foo": "bar",
 		},
 	},
-	"Object with spaces": TestCase{
+	"Object with spaces": {
 		Raw: "{ \"foo\" : \"bar\" }",
 		Result: map[string]interface{}{
 			"foo": "bar",
 		},
 	},
-	"Object with UTF-8 value": TestCase{
+	"Object with UTF-8 value": {
 		Raw: "{ \"foo\" : \"\\u6211\" }",
 		Result: map[string]interface{}{
 			"foo": "我",
 		},
 	},
-	"Object with tabs": TestCase{
+	"Object with tabs": {
 		Raw: "{	\"foo\"	:	\"bar\"	}",
 		Result: map[string]interface{}{
 			"foo": "bar",
 		},
 	},
-	"Object with empty nested object": TestCase{
+	"Object with empty nested object": {
 		Raw: "{ \"foo\": {}}",
 		Result: map[string]interface{}{
 			"foo": map[string]interface{}{},
 		},
 	},
-	"Object with empty nested array": TestCase{
+	"Object with empty nested array": {
 		Raw: "{\"foo\": []}",
 		Result: map[string]interface{}{
 			"foo": []interface{}{},
 		},
 	},
-	"Array": TestCase{
+	"Array": {
 		Raw: "[1234,\"foobar\"]",
 		Result: []interface{}{
 			int64(1234),
 			"foobar",
 		},
 	},
-	"Array with spaces": TestCase{
+	"Array with spaces": {
 		Raw: "[ 1234 , \"foobar\" ]",
 		Result: []interface{}{
 			int64(1234),
 			"foobar",
 		},
 	},
-	"Array with tabs": TestCase{
+	"Array with tabs": {
 		Raw: "[	1234	,	\"foobar\"	]",
 		Result: []interface{}{
 			int64(1234),
 			"foobar",
 		},
 	},
-	"Array with multiple tabs": TestCase{
+	"Array with multiple tabs": {
 		Raw: "[				1234,\"foobar\"]",
 		Result: []interface{}{
 			int64(1234),
 			"foobar",
 		},
 	},
-	"Array with no contents": TestCase{
+	"Array with no contents": {
 		Raw:    "[]",
 		Result: []interface{}{},
 	},
-	"Array with empty object": TestCase{
+	"Array with empty object": {
 		Raw: "[{}]",
 		Result: []interface{}{
 			map[string]interface{}{},

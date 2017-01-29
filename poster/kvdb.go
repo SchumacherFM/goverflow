@@ -22,6 +22,7 @@ package poster
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/cznic/kv"
 	"github.com/kurrik/twittergo"
 )

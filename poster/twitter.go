@@ -23,10 +23,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/SchumacherFM/goverflow/seapi"
-	"github.com/kurrik/oauth1a"
-	"github.com/kurrik/twittergo"
-	log "github.com/segmentio/go-log"
 	"html"
 	"net/http"
 	"net/url"
@@ -34,6 +30,11 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/SchumacherFM/goverflow/seapi"
+	"github.com/kurrik/oauth1a"
+	"github.com/kurrik/twittergo"
+	log "github.com/segmentio/go-log"
 )
 
 const (

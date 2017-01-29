@@ -20,8 +20,9 @@
 package poster
 
 import (
-	"github.com/kurrik/twittergo"
 	"testing"
+
+	"github.com/kurrik/twittergo"
 )
 
 var (
